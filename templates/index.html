@@ -20,70 +20,119 @@
                 <div class="form-group">
                     <label>Company</label>
                     <select id="companySelect" name="Company" required>
+                        <option value="" selected>Marka seçiniz</option>
                         {% for item in options.companies %}
-                            <option value="{{ item }}">{{ item }}</option>
+                            <option value="{{ item }}"
+                                {% if selected and selected.Company == item %}selected{% endif %}>
+                                {{ item }}
+                            </option>
                         {% endfor %}
                     </select>
                 </div>
 
                 <div class="form-group">
                     <label>Product</label>
-                    <select id="productSelect" name="Product" required></select>
+                    <select id="productSelect" name="Product" required>
+                        <option value="" selected disabled>Önce marka seçiniz</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label>Type Name</label>
-                    <select id="typeSelect" name="TypeName" required></select>
+                    <select id="typeSelect" name="TypeName" required>
+                        <option value="" selected disabled>Ürün tipi seçiniz</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label>RAM (GB)</label>
-                    <input type="number" name="Ram" value="8" required>
+                    <input 
+                        type="number" 
+                        name="Ram" 
+                        placeholder="RAM giriniz örn: 8"
+                        value="{% if selected %}{{ selected.Ram }}{% endif %}" 
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
                     <label>Screen Size (Inches)</label>
-                    <input type="number" step="0.1" name="Inches" value="15.6" required>
+                    <input 
+                        type="number" 
+                        step="0.1" 
+                        name="Inches" 
+                        placeholder="Ekran boyutu örn: 15.6"
+                        value="{% if selected %}{{ selected.Inches }}{% endif %}" 
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
                     <label>Weight (kg)</label>
-                    <input type="number" step="0.1" name="Weight" value="1.8" required>
+                    <input 
+                        type="number" 
+                        step="0.1" 
+                        name="Weight" 
+                        placeholder="Ağırlık örn: 1.8"
+                        value="{% if selected %}{{ selected.Weight }}{% endif %}" 
+                        required
+                    >
                 </div>
 
                 <div class="form-group">
                     <label>Operating System</label>
-                    <select id="osSelect" name="OpSys" required></select>
+                    <select id="osSelect" name="OpSys" required>
+                        <option value="" selected disabled>İşletim sistemi seçiniz</option>
+                    </select>
                 </div>
 
                 <div class="form-group">
                     <label>Memory</label>
-                    <select id="memorySelect" name="Memory" required></select>
+                    <select id="memorySelect" name="Memory" required>
+                        <option value="" selected disabled>Depolama seçiniz</option>
+                    </select>
                 </div>
             </div>
 
             <div class="form-group full">
                 <label>CPU</label>
-                <select id="cpuSelect" name="Cpu" required></select>
+                <select id="cpuSelect" name="Cpu" required>
+                    <option value="" selected disabled>İşlemci seçiniz</option>
+                </select>
             </div>
 
             <div class="form-group full">
                 <label>GPU</label>
-                <select id="gpuSelect" name="Gpu" required></select>
+                <select id="gpuSelect" name="Gpu" required>
+                    <option value="" selected disabled>Ekran kartı seçiniz</option>
+                </select>
             </div>
 
             <div class="form-group full">
                 <label>Screen Resolution</label>
-                <select id="resolutionSelect" name="ScreenResolution" required></select>
+                <select id="resolutionSelect" name="ScreenResolution" required>
+                    <option value="" selected disabled>Ekran çözünürlüğü seçiniz</option>
+                </select>
             </div>
 
             <button type="submit">Fiyat Tahmini Yap</button>
+
+            <a href="/" class="reset-btn">Yeni Tahmin Yap / Temizle</a>
         </form>
 
         {% if prediction %}
             <div class="result">
                 <span>Tahmini Laptop Fiyatı</span>
                 <strong>€ {{ prediction }}</strong>
+
+                {% if selected %}
+                    <p class="summary">
+                        {{ selected.Company }} - {{ selected.Product }} |
+                        {{ selected.Ram }} GB RAM |
+                        {{ selected.Inches }} inch |
+                        {{ selected.Weight }} kg
+                    </p>
+                {% endif %}
             </div>
         {% endif %}
 
@@ -100,51 +149,119 @@
 const companySelect = document.getElementById("companySelect");
 const productSelect = document.getElementById("productSelect");
 
-async function loadCompanyOptions(company) {
+const selectedData = {
+    company: "{{ selected.Company if selected else '' }}",
+    product: "{{ selected.Product if selected else '' }}",
+    typeName: "{{ selected.TypeName if selected else '' }}",
+    cpu: "{{ selected.Cpu if selected else '' }}",
+    gpu: "{{ selected.Gpu if selected else '' }}",
+    memory: "{{ selected.Memory if selected else '' }}",
+    os: "{{ selected.OpSys if selected else '' }}",
+    resolution: "{{ selected.ScreenResolution if selected else '' }}"
+};
+
+async function loadCompanyOptions(company, selectedProduct = "") {
+    if (!company) {
+        resetDependentSelects();
+        return;
+    }
+
     const response = await fetch(`/options/${encodeURIComponent(company)}`);
     const data = await response.json();
 
-    fillSelect("productSelect", data.products);
+    fillSelect("productSelect", data.products, "Ürün seçiniz", selectedProduct);
 
-    if (data.products.length > 0) {
-        await loadProductOptions(company, data.products[0]);
+    if (selectedProduct) {
+        await loadProductOptions(company, selectedProduct);
     }
 }
 
 async function loadProductOptions(company, product) {
+    if (!company || !product) {
+        resetProductDependentSelects();
+        return;
+    }
+
     const response = await fetch(`/options/${encodeURIComponent(company)}/${encodeURIComponent(product)}`);
     const data = await response.json();
 
-    fillSelect("typeSelect", data.typenames);
-    fillSelect("cpuSelect", data.cpus);
-    fillSelect("gpuSelect", data.gpus);
-    fillSelect("memorySelect", data.memories);
-    fillSelect("osSelect", data.opsys);
-    fillSelect("resolutionSelect", data.resolutions);
+    fillSelect("typeSelect", data.typenames, "Ürün tipi seçiniz", selectedData.typeName);
+    fillSelect("cpuSelect", data.cpus, "İşlemci seçiniz", selectedData.cpu);
+    fillSelect("gpuSelect", data.gpus, "Ekran kartı seçiniz", selectedData.gpu);
+    fillSelect("memorySelect", data.memories, "Depolama seçiniz", selectedData.memory);
+    fillSelect("osSelect", data.opsys, "İşletim sistemi seçiniz", selectedData.os);
+    fillSelect("resolutionSelect", data.resolutions, "Ekran çözünürlüğü seçiniz", selectedData.resolution);
 }
 
-function fillSelect(id, values) {
+function fillSelect(id, values, placeholder, selectedValue = "") {
     const select = document.getElementById(id);
     select.innerHTML = "";
+
+    const placeholderOption = document.createElement("option");
+    placeholderOption.value = "";
+    placeholderOption.textContent = placeholder;
+    placeholderOption.disabled = true;
+    placeholderOption.selected = !selectedValue;
+    select.appendChild(placeholderOption);
 
     values.forEach(value => {
         const option = document.createElement("option");
         option.value = value;
         option.textContent = value;
+
+        if (value === selectedValue) {
+            option.selected = true;
+        }
+
         select.appendChild(option);
     });
 }
 
+function resetDependentSelects() {
+    fillSelect("productSelect", [], "Önce marka seçiniz");
+    resetProductDependentSelects();
+}
+
+function resetProductDependentSelects() {
+    fillSelect("typeSelect", [], "Ürün tipi seçiniz");
+    fillSelect("cpuSelect", [], "İşlemci seçiniz");
+    fillSelect("gpuSelect", [], "Ekran kartı seçiniz");
+    fillSelect("memorySelect", [], "Depolama seçiniz");
+    fillSelect("osSelect", [], "İşletim sistemi seçiniz");
+    fillSelect("resolutionSelect", [], "Ekran çözünürlüğü seçiniz");
+}
+
 companySelect.addEventListener("change", async () => {
+    selectedData.product = "";
+    selectedData.typeName = "";
+    selectedData.cpu = "";
+    selectedData.gpu = "";
+    selectedData.memory = "";
+    selectedData.os = "";
+    selectedData.resolution = "";
+
     await loadCompanyOptions(companySelect.value);
 });
 
 productSelect.addEventListener("change", async () => {
+    selectedData.typeName = "";
+    selectedData.cpu = "";
+    selectedData.gpu = "";
+    selectedData.memory = "";
+    selectedData.os = "";
+    selectedData.resolution = "";
+
     await loadProductOptions(companySelect.value, productSelect.value);
 });
 
 window.onload = async () => {
-    await loadCompanyOptions(companySelect.value);
+    if (selectedData.company) {
+        companySelect.value = selectedData.company;
+        await loadCompanyOptions(selectedData.company, selectedData.product);
+    } else {
+        companySelect.value = "";
+        resetDependentSelects();
+    }
 };
 </script>
 

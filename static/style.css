@@ -172,3 +172,22 @@ button:hover{
         font-size:28px;
     }
 }
+.reset-btn{
+    display:block;
+    text-align:center;
+    margin-top:14px;
+    color:#2563eb;
+    font-weight:bold;
+    text-decoration:none;
+}
+
+.reset-btn:hover{
+    text-decoration:underline;
+}
+
+.summary{
+    margin-top:14px;
+    color:#047857;
+    font-size:14px;
+    line-height:1.5;
+}
