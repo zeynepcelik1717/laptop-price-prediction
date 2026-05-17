@@ -102,4 +102,15 @@ You can add screenshots here later.
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/laptop-price-prediction.git
+git clone https://github.com/zeynepcelik1717/laptop-price-prediction.git
+
+Install requirements: Install requirements:
+
+Run the application: uvicorn app.main:app --reload
+
+Open in browser: http://127.0.0.1:8000
+
+👩‍💻Developer
+Zeynep Çelik
+Software Engineering Student
+Fırat University
