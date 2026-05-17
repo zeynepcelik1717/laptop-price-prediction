@@ -1,167 +1,174 @@
-* {
-    box-sizing: border-box;
+*{
+    box-sizing:border-box;
 }
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #eef2ff, #f8fafc);
-    color: #111827;
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f3f4f6;
+    color:#111827;
 }
 
-.page {
-    min-height: 100vh;
-    padding: 32px 16px;
+.page{
+    width:100%;
+    min-height:100vh;
+    padding:40px 20px;
 }
 
-.card {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
-    background: white;
-    border-radius: 22px;
-    padding: 36px;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.10);
+.card{
+    width:100%;
+    max-width:1000px;
+    margin:auto;
+    background:white;
+    border-radius:24px;
+    padding:40px;
+    box-shadow:0 10px 35px rgba(0,0,0,0.08);
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 30px;
+.header{
+    text-align:center;
+    margin-bottom:35px;
 }
 
-.header h1 {
-    margin: 0;
-    font-size: clamp(26px, 5vw, 38px);
+.header h1{
+    margin:0;
+    font-size:38px;
 }
 
-.header p {
-    color: #6b7280;
-    margin-top: 10px;
-    font-size: clamp(14px, 3vw, 16px);
+.header p{
+    color:#6b7280;
+    margin-top:10px;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:20px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 18px;
+.form-group{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:18px;
 }
 
-.form-group.full {
-    width: 100%;
+.form-group.full{
+    grid-column:1 / -1;
 }
 
-label {
-    font-weight: bold;
-    margin-bottom: 7px;
-    color: #374151;
-    font-size: 14px;
+label{
+    margin-bottom:8px;
+    font-weight:bold;
+    font-size:14px;
 }
 
 input,
-select {
-    width: 100%;
-    min-height: 46px;
-    padding: 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 12px;
-    font-size: 16px;
-    outline: none;
-    background: white;
+select{
+    width:100%;
+    padding:14px;
+    border:1px solid #d1d5db;
+    border-radius:12px;
+    font-size:15px;
+    background:white;
 }
 
 input:focus,
-select:focus {
-    border-color: #2563eb;
+select:focus{
+    outline:none;
+    border-color:#2563eb;
 }
 
-button {
-    width: 100%;
-    min-height: 52px;
-    padding: 15px;
-    border: none;
-    border-radius: 14px;
-    background: #2563eb;
-    color: white;
-    font-size: 17px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
+button{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:14px;
+    background:#2563eb;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:10px;
 }
 
-button:hover {
-    background: #1d4ed8;
+button:hover{
+    background:#1d4ed8;
 }
 
-.result {
-    margin-top: 25px;
-    padding: 22px;
-    border-radius: 16px;
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    text-align: center;
+.result{
+    margin-top:25px;
+    padding:25px;
+    border-radius:16px;
+    background:#ecfdf5;
+    border:1px solid #a7f3d0;
+    text-align:center;
 }
 
-.result span {
-    display: block;
-    color: #047857;
-    margin-bottom: 8px;
+.result span{
+    display:block;
+    margin-bottom:10px;
+    color:#047857;
 }
 
-.result strong {
-    font-size: clamp(24px, 6vw, 34px);
-    color: #065f46;
+.result strong{
+    font-size:34px;
+    color:#065f46;
 }
 
-/* Tablet */
-@media (max-width: 768px) {
-    .page {
-        padding: 20px 12px;
+/* TABLET */
+@media screen and (max-width:900px){
+
+    .card{
+        padding:30px;
     }
 
-    .card {
-        padding: 26px 18px;
-        border-radius: 18px;
+    .grid{
+        grid-template-columns:1fr;
     }
 
-    .grid {
-        grid-template-columns: 1fr;
-        gap: 0;
+    .header h1{
+        font-size:32px;
     }
 }
 
-/* Telefon */
-@media (max-width: 480px) {
-    .page {
-        padding: 0;
-        background: white;
+/* TELEFON */
+@media screen and (max-width:600px){
+
+    .page{
+        padding:0;
     }
 
-    .card {
-        min-height: 100vh;
-        border-radius: 0;
-        box-shadow: none;
-        padding: 24px 16px;
+    .card{
+        min-height:100vh;
+        border-radius:0;
+        padding:22px 16px;
+        box-shadow:none;
     }
 
-    .header {
-        margin-bottom: 22px;
+    .header{
+        margin-bottom:25px;
+    }
+
+    .header h1{
+        font-size:28px;
+    }
+
+    .header p{
+        font-size:14px;
     }
 
     input,
-    select {
-        min-height: 48px;
+    select{
+        padding:13px;
+        font-size:16px;
     }
 
-    button {
-        position: sticky;
-        bottom: 12px;
-        z-index: 10;
-        box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+    button{
+        padding:15px;
+        font-size:16px;
+    }
+
+    .result strong{
+        font-size:28px;
     }
 }
