@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Laptop Price Prediction</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="page">
+    <div class="card">
+        <div class="header">
+            <h1>Laptop Price Prediction</h1>
+            <p>Laptop özelliklerini seç, model tahmini fiyatı hesaplasın.</p>
+        </div>
+
+        <form action="/predict" method="post">
+
+            <div class="grid">
+                <div class="form-group">
+                    <label>Company</label>
+                    <select id="companySelect" name="Company" required>
+                        {% for item in options.companies %}
+                            <option value="{{ item }}">{{ item }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Product</label>
+                    <select id="productSelect" name="Product" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Type Name</label>
+                    <select id="typeSelect" name="TypeName" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label>RAM (GB)</label>
+                    <input type="number" name="Ram" value="8" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Screen Size (Inches)</label>
+                    <input type="number" step="0.1" name="Inches" value="15.6" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Weight (kg)</label>
+                    <input type="number" step="0.1" name="Weight" value="1.8" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Operating System</label>
+                    <select id="osSelect" name="OpSys" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label>Memory</label>
+                    <select id="memorySelect" name="Memory" required></select>
+                </div>
+            </div>
+
+            <div class="form-group full">
+                <label>CPU</label>
+                <select id="cpuSelect" name="Cpu" required></select>
+            </div>
+
+            <div class="form-group full">
+                <label>GPU</label>
+                <select id="gpuSelect" name="Gpu" required></select>
+            </div>
+
+            <div class="form-group full">
+                <label>Screen Resolution</label>
+                <select id="resolutionSelect" name="ScreenResolution" required></select>
+            </div>
+
+            <button type="submit">Fiyat Tahmini Yap</button>
+        </form>
+
+        {% if prediction %}
+            <div class="result">
+                <span>Tahmini Laptop Fiyatı</span>
+                <strong>€ {{ prediction }}</strong>
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="result" style="background:#fee2e2; border-color:#fecaca;">
+                <span style="color:#991b1b;">Hata oluştu</span>
+                <strong style="font-size:16px; color:#991b1b;">{{ error }}</strong>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const companySelect = document.getElementById("companySelect");
+const productSelect = document.getElementById("productSelect");
+
+async function loadCompanyOptions(company) {
+    const response = await fetch(`/options/${encodeURIComponent(company)}`);
+    const data = await response.json();
+
+    fillSelect("productSelect", data.products);
+
+    if (data.products.length > 0) {
+        await loadProductOptions(company, data.products[0]);
+    }
+}
+
+async function loadProductOptions(company, product) {
+    const response = await fetch(`/options/${encodeURIComponent(company)}/${encodeURIComponent(product)}`);
+    const data = await response.json();
+
+    fillSelect("typeSelect", data.typenames);
+    fillSelect("cpuSelect", data.cpus);
+    fillSelect("gpuSelect", data.gpus);
+    fillSelect("memorySelect", data.memories);
+    fillSelect("osSelect", data.opsys);
+    fillSelect("resolutionSelect", data.resolutions);
+}
+
+function fillSelect(id, values) {
+    const select = document.getElementById(id);
+    select.innerHTML = "";
+
+    values.forEach(value => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = value;
+        select.appendChild(option);
+    });
+}
+
+companySelect.addEventListener("change", async () => {
+    await loadCompanyOptions(companySelect.value);
+});
+
+productSelect.addEventListener("change", async () => {
+    await loadProductOptions(companySelect.value, productSelect.value);
+});
+
+window.onload = async () => {
+    await loadCompanyOptions(companySelect.value);
+};
+</script>
+
+</body>
+</html>
